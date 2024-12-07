@@ -1,25 +1,26 @@
 slint::slint!{
-    import { Button, VerticalBox } from "std-widgets.slint";
-    export component App inherits Window {
-        property <int> counter: 1;
-        GridLayout {
-            Text { 
-                text: "Hello World! " + counter;
-                color: green;
+    import { HorizontalBox, VerticalBox, LineEdit, Button } from "std-widgets.slint";
+
+    export component Recipe inherits Window {
+        VerticalBox {
+            padding: 10rem;
+            username := LineEdit {
+                placeholder-text: "username";
             }
-            Row {
-                Button { 
-                    text: "Click";
-                    clicked => {counter += 1;}
-                }
+            password := LineEdit {
+                input-type: InputType.password;
+                placeholder-text: "password";
+            }
+            login := Button {
+                text: "Login";
             }
         }
     }
 }
 
 fn main() {
-    let app = App::new().unwrap();
+    let app = Recipe::new().unwrap();
     app.run().unwrap();
 
-    println!("Hello, world!");
+    println!("End Program");
 }
