@@ -12,26 +12,28 @@ where
 }
 
 fn switch_window(current_window: &Window, next_window: &Window) {
-        let window_position = current_window.position();
+    println!("{:?}", current_window.is_maximized());
+    let window_position = current_window.position();
+    
+    // fixes the issue where it unmaximizes the window
+    // i assume you're not supposed to reposition it when maximized cause it's stretched to the screen
+    if !current_window.is_maximized() {
         next_window.set_position(window_position);
-        next_window.set_size(current_window.size());
-        next_window.set_maximized(current_window.is_maximized());
-        handle_visibility(|| next_window.show());
-        handle_visibility(|| current_window.hide());
-}
+    }
 
-// fn switch_window(a: &Window, b: &Window) {
-//     let window_position = a.position();
-//     b.set_position(window_position);
-//     b.set_size(a.size());
-// }
+    next_window.set_size(current_window.size());
+    next_window.set_maximized(current_window.is_maximized());
+    
+    handle_visibility(|| next_window.show());
+    handle_visibility(|| current_window.hide());
+}
 
 fn main() {
     let login = Login::new().unwrap();
     let signup = SignUp::new().unwrap();
     let home = Home::new().unwrap();
 
-    // only the starting window needs to have this size considering it just takes the previous window size when you switch
+    // only the starting window needs to have this size considering it takes the previous window size when you switch
     login.window().set_size(WindowSize::Physical(PhysicalSize::new(800, 600)));
 
     // signup.window().set_size(WindowSize::Physical(PhysicalSize::new(800, 600)));
@@ -71,7 +73,7 @@ fn main() {
 
             if username != "" || password != "" {
                 println!("Login form: {} & {}", username, password);
-                
+
                 switch_window(login.window(), home.window());
                 home.set_username(username);
             }
