@@ -1,5 +1,6 @@
 slint::include_modules!();
-use slint::{PhysicalSize, WindowSize, PlatformError, ComponentHandle};
+
+use slint::{ComponentHandle, PhysicalSize, PlatformError, Window, WindowSize};
 
 fn handle_visibility<F>(action: F)
 where
@@ -43,6 +44,14 @@ fn main() {
     signup.on_login_pressed({
         let signup_weak = signup_weak.clone();
         let login_weak = login_weak.clone();
+        move || {
+            let login = login_weak.upgrade().unwrap();
+            let signup = signup_weak.upgrade().unwrap();
+            switch_window(signup.window(), login.window());
+            handle_visibility(|| login.show());
+            handle_visibility(|| signup.hide());
+            login.window().set_maximized(signup.window().is_maximized());
+        }
     });
 
     login.on_signup_pressed({
@@ -51,13 +60,12 @@ fn main() {
         move || {
             let login = login_weak.upgrade().unwrap();
             let signup = signup_weak.upgrade().unwrap();
+            switch_window(login.window(), signup.window());
             signup.set_username(login.get_username());
             signup.set_password(login.get_password());
-            let window_position = login.window().position();
-            signup.window().set_position(window_position);
-            signup.window().set_size(login.window().size());
             handle_visibility(|| signup.show());
             handle_visibility(|| login.hide());
+            signup.window().set_maximized(login.window().is_maximized());
         }
     });
 
@@ -69,9 +77,11 @@ fn main() {
             let password = login.get_password();
             if username != "" || password != "" {
                 println!("Login form: {} & {}", username, password);
+                switch_window(login.window(), home.window());
                 home.set_username(username);
                 handle_visibility(|| home.show());
                 handle_visibility(|| login.hide());
+                home.window().set_maximized(login.window().is_maximized());
             }
         }
     });
