@@ -2,6 +2,11 @@
 name = "fbla_finance_project"
 version = "0.1.0"
 edition = "2021"
+build = "build.rs"
 
 [dependencies]
 slint = "1.8.0"
+
+
+[build-dependencies]
+slint-build = "1.8.0"
