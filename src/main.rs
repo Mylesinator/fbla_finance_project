@@ -11,7 +11,7 @@ where
     }
 }
 
-fn switch_window(current_window: &Window, next_window: &Window) {
+fn switch_window(current_window: &Window, next_window: &Window) -> Result<(), PlatformError> {
     let window_position = current_window.position();
     
     // fixes the issue where it unmaximizes the window
@@ -23,8 +23,16 @@ fn switch_window(current_window: &Window, next_window: &Window) {
     next_window.set_size(current_window.size());
     next_window.set_maximized(current_window.is_maximized());
     
-    handle_visibility(|| next_window.show());
-    handle_visibility(|| current_window.hide());
+    // magical question mark.....
+    next_window.show()?;
+    current_window.hide()?;
+
+    // handle_visibility(|| next_window.show());
+    // handle_visibility(|| current_window.hide());
+
+    // returning an Ok() somehow fixes the problem with the return data type
+    // now the magical question mark works
+    return Ok(());
 }
 
 fn main() {
@@ -55,13 +63,15 @@ fn main() {
     signup.on_login_pressed({
         let signup = signup_weak.clone().upgrade().unwrap();
         let login = login_weak.clone().upgrade().unwrap();
-        move || { switch_window(signup.window(), login.window()); }
+
+        // let _ = : used for ignoring the returned result :I
+        move || { let _ = switch_window(signup.window(), login.window()); }
     });
 
     login.on_signup_pressed({
         let signup = signup_weak.clone().upgrade().unwrap();
         let login = login_weak.clone().upgrade().unwrap();
-        move || { switch_window(login.window(), signup.window()); }
+        move || { let _ = switch_window(login.window(), signup.window()); }
     });
 
     login.on_login_pressed({
@@ -73,7 +83,7 @@ fn main() {
             if username != "" || password != "" {
                 println!("Login form: {} & {}", username, password);
 
-                switch_window(login.window(), home.window());
+                let _ = switch_window(login.window(), home.window());
                 home.set_username(username);
             }
         }
