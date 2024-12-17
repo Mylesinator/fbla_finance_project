@@ -1,5 +1,6 @@
 slint::include_modules!();
-use slint::{PhysicalSize, WindowSize, PlatformError, ComponentHandle};
+
+use slint::{ComponentHandle, PhysicalSize, PlatformError, Window, WindowSize};
 
 fn handle_visibility<F>(action: F)
 where
@@ -8,6 +9,12 @@ where
     if let Err(e) = action() {
         eprintln!("Error changing visibility: {}", e);
     }
+}
+
+fn switch_window(a: &Window, b: &Window) {
+    let window_position = a.position();
+    b.set_position(window_position);
+    b.set_size(a.size());
 }
 
 fn main() {
@@ -36,9 +43,7 @@ fn main() {
         move || {
             let login = login_weak.upgrade().unwrap();
             let signup = signup_weak.upgrade().unwrap();
-            let window_position = signup.window().position();
-            login.window().set_position(window_position);
-            login.window().set_size(signup.window().size());
+            switch_window(signup.window(), login.window());
             handle_visibility(|| login.show());
             handle_visibility(|| signup.hide());
             login.window().set_maximized(signup.window().is_maximized());
@@ -51,9 +56,7 @@ fn main() {
         move || {
             let login = login_weak.upgrade().unwrap();
             let signup = signup_weak.upgrade().unwrap();
-            let window_position = login.window().position();
-            signup.window().set_position(window_position);
-            signup.window().set_size(login.window().size());
+            switch_window(login.window(), signup.window());
             signup.set_username(login.get_username());
             signup.set_password(login.get_password());
             handle_visibility(|| signup.show());
@@ -70,9 +73,7 @@ fn main() {
             let password = login.get_password();
             if username != "" || password != "" {
                 println!("Login form: {} & {}", username, password);
-                let window_position = login.window().position();
-                home.window().set_position(window_position);
-                home.window().set_size(login.window().size());
+                switch_window(login.window(), home.window());
                 home.set_username(username);
                 handle_visibility(|| home.show());
                 handle_visibility(|| login.hide());
