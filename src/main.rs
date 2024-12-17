@@ -54,7 +54,7 @@ fn main() {
             let window_position = signup.window().position();
             handle_visibility(|| signup.show());
             handle_visibility(|| login.hide());
-            signup.window().set_position(window_position);
+            login.window().set_position(window_position);
         }
     });
 
