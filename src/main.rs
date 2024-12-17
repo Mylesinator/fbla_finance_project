@@ -10,6 +10,16 @@ where
     }
 }
 
+fn switch_window(current_window: Box<slint::Weak<dyn ComponentHandle>>, next_window: Box<slint::Weak<dyn ComponentHandle>>) {
+        let current_window = current_window.upgrade().unwrap();
+        let next_window = next_window.upgrade().unwrap();
+        let window_position = current_window.window().position();
+        next_window.window().set_position(window_position);
+        next_window.window().set_size(current_window.window().size());
+        handle_visibility(|| next_window.show());
+        handle_visibility(|| current_window.hide());
+}
+
 fn main() {
     let login = Login::new().unwrap();
     let signup = SignUp::new().unwrap();
@@ -33,14 +43,6 @@ fn main() {
     signup.on_login_pressed({
         let signup_weak = signup_weak.clone();
         let login_weak = login_weak.clone();
-        move || {
-            let signup = signup_weak.upgrade().unwrap();
-            let login = login_weak.upgrade().unwrap();
-            let window_position = signup.window().position();
-            login.window().set_position(window_position);
-            handle_visibility(|| login.show());
-            handle_visibility(|| signup.hide());
-        }
     });
 
     login.on_signup_pressed({
@@ -53,6 +55,7 @@ fn main() {
             signup.set_password(login.get_password());
             let window_position = login.window().position();
             signup.window().set_position(window_position);
+            signup.window().set_size(login.window().size());
             handle_visibility(|| signup.show());
             handle_visibility(|| login.hide());
         }
