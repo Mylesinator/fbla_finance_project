@@ -1,6 +1,6 @@
 slint::include_modules!();
 
-use slint::{Window, WindowSize, PhysicalSize, PlatformError};
+use slint::{WindowSize, PhysicalSize, PlatformError};
 
 fn main() -> Result<(), PlatformError> {
     let home = Home::new().unwrap();
