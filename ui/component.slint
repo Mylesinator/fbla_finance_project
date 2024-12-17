@@ -1,40 +1,43 @@
-import { VerticalBox, LineEdit, Button } from "std-widgets.slint";
+import { VerticalBox, LineEdit, Button, HorizontalBox } from "std-widgets.slint";
 export component Login inherits Window {
     title: "FBLA Finance Login";
     background: black;
-    out property <string> username;
+    in-out property <string> username;
     in-out property <string> password;
     callback login-pressed <=> login.clicked;
     callback signup-pressed <=> signup.clicked;
-    VerticalBox {
-        alignment: LayoutAlignment.center;
-        spacing: 1rem;
-        padding: 10rem;
-        Text {
-            text: "Login";
-            horizontal-alignment: center;
-            font-size: 3rem;
-            color: white;
-        }
-        LineEdit {
-            input-type: InputType.text;
-            placeholder-text: "username";
-            padding-left: 2rem;
-            font-size: 3rem;
-            edited(text) => {username = text}
-        }
-        LineEdit {
-            input-type: InputType.password;
-            placeholder-text: "password";
-            font-size: 3rem;
-            edited(text) => {password = text}
-        }
-        login := Button {
-            primary: true;
-            text: "Login";
-        }
-        signup := Button {
-            text: "Sign Up";
+    HorizontalBox {
+        width: 100%;
+        VerticalBox {
+            alignment: LayoutAlignment.center;
+            spacing: 1rem;
+            min-width: 20rem;
+            
+            Text {
+                text: "Login";
+                horizontal-alignment: center;
+                font-size: 3rem;
+                color: white;
+            }
+            LineEdit {
+                input-type: InputType.text;
+                placeholder-text: "username";
+                font-size: 3rem;
+                text <=> root.username;
+            }
+            LineEdit {
+                input-type: InputType.password;
+                placeholder-text: "password";
+                font-size: 3rem;
+                text <=> root.password;
+            }
+            login := Button {
+                primary: true;
+                text: "Login";
+            }
+            signup := Button {
+                text: "Sign Up";
+            }
         }
     }
 }
@@ -46,6 +49,7 @@ export component SignUp inherits Window {
     in-out property <string> password;
     callback signup-pressed <=> signup.clicked;
     callback login-pressed <=> login.clicked;
+    
     VerticalBox {
         alignment: LayoutAlignment.center;
         spacing: 1rem;
@@ -59,15 +63,14 @@ export component SignUp inherits Window {
         LineEdit {
             input-type: InputType.text;
             placeholder-text: "username";
-            padding-left: 2rem;
             font-size: 3rem;
-            edited(text) => {username = text}
+            text <=> root.username;
         }
         LineEdit {
             input-type: InputType.password;
             placeholder-text: "password";
             font-size: 3rem;
-            edited(text) => {password = text}
+            text <=> root.password;
         }
         signup := Button {
             primary: true;
