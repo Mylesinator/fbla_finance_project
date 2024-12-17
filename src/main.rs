@@ -12,7 +12,6 @@ where
 }
 
 fn switch_window(current_window: &Window, next_window: &Window) {
-    println!("{:?}", current_window.is_maximized());
     let window_position = current_window.position();
     
     // fixes the issue where it unmaximizes the window
@@ -81,5 +80,5 @@ fn main() {
     });
     
     login.run().unwrap();
-    println!("Programmed Ended!");
+    println!("Window closed.");
 }
