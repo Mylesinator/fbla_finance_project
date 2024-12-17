@@ -36,10 +36,10 @@ fn main() {
         move || {
             let signup = signup_weak.upgrade().unwrap();
             let login = login_weak.upgrade().unwrap();
-            let window_position = login.window().position();
+            let window_position = signup.window().position();
+            login.window().set_position(window_position);
             handle_visibility(|| login.show());
             handle_visibility(|| signup.hide());
-            signup.window().set_position(window_position);
         }
     });
 
@@ -51,10 +51,10 @@ fn main() {
             let signup = signup_weak.upgrade().unwrap();
             signup.set_username(login.get_username());
             signup.set_password(login.get_password());
-            let window_position = signup.window().position();
+            let window_position = login.window().position();
+            signup.window().set_position(window_position);
             handle_visibility(|| signup.show());
             handle_visibility(|| login.hide());
-            login.window().set_position(window_position);
         }
     });
 
