@@ -11,25 +11,35 @@ where
     }
 }
 
-fn switch_window(current_window: Box<slint::Weak<dyn ComponentHandle>>, next_window: Box<slint::Weak<dyn ComponentHandle>>) {
-        let current_window = current_window.upgrade().unwrap();
-        let next_window = next_window.upgrade().unwrap();
-        let window_position = current_window.window().position();
-        next_window.window().set_position(window_position);
-        next_window.window().set_size(current_window.window().size());
+fn switch_window(current_window: &Window, next_window: &Window) {
+        let window_position = current_window.position();
+        next_window.set_position(window_position);
+        next_window.set_size(current_window.size());
+        next_window.set_maximized(current_window.is_maximized());
         handle_visibility(|| next_window.show());
         handle_visibility(|| current_window.hide());
 }
+
+// fn switch_window(a: &Window, b: &Window) {
+//     let window_position = a.position();
+//     b.set_position(window_position);
+//     b.set_size(a.size());
+// }
 
 fn main() {
     let login = Login::new().unwrap();
     let signup = SignUp::new().unwrap();
     let home = Home::new().unwrap();
+
+    // only the starting window needs to have this size considering it just takes the previous window size when you switch
     login.window().set_size(WindowSize::Physical(PhysicalSize::new(800, 600)));
-    signup.window().set_size(WindowSize::Physical(PhysicalSize::new(800, 600)));
-    home.window().set_size(WindowSize::Physical(PhysicalSize::new(800, 600)));
+
+    // signup.window().set_size(WindowSize::Physical(PhysicalSize::new(800, 600)));
+    // home.window().set_size(WindowSize::Physical(PhysicalSize::new(800, 600)));
+
     let login_weak = login.as_weak();
     let signup_weak = signup.as_weak();
+
     // let home_weak = home.as_weak();
 
     signup.on_signup_pressed({
@@ -42,46 +52,28 @@ fn main() {
     });
 
     signup.on_login_pressed({
-        let signup_weak = signup_weak.clone();
-        let login_weak = login_weak.clone();
-        move || {
-            let login = login_weak.upgrade().unwrap();
-            let signup = signup_weak.upgrade().unwrap();
-            switch_window(signup.window(), login.window());
-            handle_visibility(|| login.show());
-            handle_visibility(|| signup.hide());
-            login.window().set_maximized(signup.window().is_maximized());
-        }
+        let signup = signup_weak.clone().upgrade().unwrap();
+        let login = login_weak.clone().upgrade().unwrap();
+        move || { switch_window(signup.window(), login.window()); }
     });
 
     login.on_signup_pressed({
-        let login_weak = login_weak.clone();
-        let signup_weak = signup_weak.clone();
-        move || {
-            let login = login_weak.upgrade().unwrap();
-            let signup = signup_weak.upgrade().unwrap();
-            switch_window(login.window(), signup.window());
-            signup.set_username(login.get_username());
-            signup.set_password(login.get_password());
-            handle_visibility(|| signup.show());
-            handle_visibility(|| login.hide());
-            signup.window().set_maximized(login.window().is_maximized());
-        }
+        let signup = signup_weak.clone().upgrade().unwrap();
+        let login = login_weak.clone().upgrade().unwrap();
+        move || { switch_window(login.window(), signup.window()); }
     });
 
     login.on_login_pressed({
-        let login_weak = login_weak.clone();
+        let login = login_weak.clone().upgrade().unwrap();
         move || {
-            let login = login_weak.upgrade().unwrap();
             let username = login.get_username();
             let password = login.get_password();
+
             if username != "" || password != "" {
                 println!("Login form: {} & {}", username, password);
+                
                 switch_window(login.window(), home.window());
                 home.set_username(username);
-                handle_visibility(|| home.show());
-                handle_visibility(|| login.hide());
-                home.window().set_maximized(login.window().is_maximized());
             }
         }
     });
