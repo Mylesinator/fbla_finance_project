@@ -1,11 +1,11 @@
 import { VerticalBox, LineEdit, Button } from "std-widgets.slint";
 export component Login inherits Window {
     title: "FBLA Finance Login";
-    always-on-top: false;
     background: black;
     out property <string> username;
     in-out property <string> password;
     callback login-pressed <=> login.clicked;
+    callback signup-pressed <=> signup.clicked;
     VerticalBox {
         alignment: LayoutAlignment.center;
         spacing: 1rem;
@@ -30,19 +30,59 @@ export component Login inherits Window {
             edited(text) => {password = text}
         }
         login := Button {
+            primary: true;
             text: "Login";
         }
-        Button {
-            accessible-role: AccessibleRole.none;
+        signup := Button {
+            text: "Sign Up";
+        }
+    }
+}
+
+export component SignUp inherits Window {
+    title: "FBLA Finance Sign Up";
+    background: black;
+    in-out property <string> username;
+    in-out property <string> password;
+    callback signup-pressed <=> signup.clicked;
+    callback login-pressed <=> login.clicked;
+    VerticalBox {
+        alignment: LayoutAlignment.center;
+        spacing: 1rem;
+        padding: 10rem;
+        Text {
+            text: "Sign Up";
+            horizontal-alignment: center;
+            font-size: 3rem;
+            color: white;
+        }
+        LineEdit {
+            input-type: InputType.text;
+            placeholder-text: "username";
+            padding-left: 2rem;
+            font-size: 3rem;
+            edited(text) => {username = text}
+        }
+        LineEdit {
+            input-type: InputType.password;
+            placeholder-text: "password";
+            font-size: 3rem;
+            edited(text) => {password = text}
+        }
+        signup := Button {
             primary: true;
-            text: "Button";
+            text: "Sign Up";
+        }
+        login := Button {
+            text: "Login";
         }
     }
 }
 
 export component Home inherits Window {
+    in-out property <string> username;
     Text {
-        text: "Home Page";
+        text: "Logged in as, "+username;
         horizontal-alignment: center;
         font-size: 3rem;
         // color: white;
