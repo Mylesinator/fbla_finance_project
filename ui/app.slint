@@ -3,7 +3,7 @@ import { VerticalBox, LineEdit, Button } from "std-widgets.slint";
 component Login inherits Window {
     title: "FBLA Finance Login";
     background: black;
-    out property <string> username;
+    in-out property <string> username;
     in-out property <string> password;
     in-out property <string> current_screen;
     callback login-pressed <=> login.clicked;
@@ -34,6 +34,9 @@ component Login inherits Window {
         login := Button {
             primary: true;
             text: "Login";
+            clicked => {
+                current_screen = "landing";
+            }
         }
         signup := Button {
             text: "Sign Up";
@@ -89,17 +92,31 @@ component SignUp inherits Window {
     }
 }
 
+component Landing inherits Window {
+    title: "FBLA Finance App";
+    in-out property <string> username;
+    in-out property <string> current_screen;
+    Text {
+        text: "Logged in as, "+username;
+        horizontal-alignment: center;
+        font-size: 3rem;
+        color: white;
+    }
+}
+
 export component Home inherits Window {
     title: "Basic Window";
-    // background: black;
+    background: black;
 
     in-out property <string> current_screen: "login";
+    in-out property <string> username;
 
     VerticalBox {
         alignment: LayoutAlignment.center;
 
         Login {
             current_screen <=> current_screen;
+            username <=> username;
             visible: current_screen == "login";
         }
     }
@@ -110,6 +127,16 @@ export component Home inherits Window {
         SignUp {
             current_screen <=> current_screen;
             visible: current_screen == "signup";
+        }
+    }
+
+    VerticalBox {
+        alignment: LayoutAlignment.center;
+
+        Landing {
+            current_screen <=> current_screen;
+            username <=> username;
+            visible: current_screen == "landing";
         }
     }
 }
